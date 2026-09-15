@@ -3,7 +3,7 @@
 Where the project stands, what's left, and how each piece gets verified before
 it's called done.
 
-**Status:** Phase 1 complete — Firebase Auth and live `users/{uid}` profiles are
+**Status:** Phases 1 and 2 (rules) complete — Firebase Auth and live `users/{uid}` profiles are
 wired and confirmed against project `plyer-f746a`. Everything else in the app
 still runs on the local store (`app/src/store.tsx`), which is by design: the
 store is the single seam between the screens and the backend, so it migrates one
@@ -59,28 +59,35 @@ atomic sign-up with rollback, and setup-aware error messages. See BACKEND.md →
 
 ---
 
-## Phase 2 — Test foundation ⬜
+## Phase 2 — Test foundation ✅ (rules) / ⬜ (E2E)
 
 Deliberately before the data migration, not after. Every later phase changes
 security rules, and rules are the one part of this system where a mistake is
 silent and serious.
 
-**Build**
-- Firestore emulator wired into `firebase.json` (already configured) plus an
-  `npm test` script.
-- Rules unit tests with `@firebase/rules-unit-testing`, covering the cases that
-  matter: a donor can't read another donor's listings, an unverified org gets no
-  priority access, a driver can only touch their own runs, nobody can raise
-  their own `role`/`verified`/`reportCount`, and reports are admin-read-only.
-- Point the Playwright suite at the emulator so E2E runs against real Firestore
-  behaviour instead of the local store.
-- Both wired into `.github/workflows/ci.yml`.
+**Done — rules tests.** 61 tests in `tests/firestore.rules.test.ts`, run with
+`npm test` from the repo root (boots the Firestore emulator, runs the suite,
+tears it down) and as its own CI job.
 
-**Test** — the tests *are* the deliverable. Each must fail when the
-corresponding rule is deliberately loosened.
+Every rule has an allow case *and* a deny case, because a suite that only
+proves the happy path would pass just as well against `allow read, write: if
+true`. Covered: privilege escalation on `users` (role, verified, status,
+reportCount), org-priority listing visibility including the unverified-org
+case, client-side payment status on orders, driver run ownership, thread
+membership for reads and message authorship, admin-only reports, and the
+catch-all deny.
 
-**Done when** `npm test` runs green locally and in CI, and every rule in
-`firestore.rules` has at least one allow case and one deny case.
+**Validated by mutation, not by passing.** Four rules were loosened one at a
+time — self-promotion to admin, threads readable by non-members, clients
+flipping orders to `paid`, reports readable by anyone — and each produced
+failures. That's the evidence the suite has teeth. Repeat this whenever rules
+change: break one deliberately, confirm red, restore.
+
+**Still to do — emulator-backed E2E.** Deferred to land alongside Phase 3,
+because until the store talks to Firestore an emulator-backed E2E run exercises
+exactly the same localStorage path the current suite already covers.
+
+**Done when** the E2E suite runs against the emulator in CI.
 
 ---
 
