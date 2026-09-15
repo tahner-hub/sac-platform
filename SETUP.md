@@ -42,19 +42,29 @@ CI (typecheck + build for `app/` and `functions/`) runs on every push/PR via
    **password reset** email template is enabled (this is what makes the Forgot
    password flow self-service).
 3. **Firestore:** Build → Firestore Database → Create database (production mode).
+
+   ⚠️ Take the **`(default)`** database, not a *named* one. Firebase allows
+   several databases per project, and one you name `default` is a different
+   database from `(default)` — the console labels both "default", so there's no
+   visual difference, and the app will report no database while the console
+   plainly shows one. If you already made a named database you don't have to
+   recreate it: put its name in `VITE_FIREBASE_DATABASE_ID` in `app/.env.local`.
 4. **Storage:** Build → Storage → Get started.
 5. **Web app config:** Project settings → Your apps → Add app → Web. Copy the
-   values into `app/.env.local`:
+   values into `app/.env.local` — note the **leading dot**; `env.local` without
+   it is a file Vite never reads:
    ```sh
    cd app && cp .env.example .env.local   # paste the 6 VITE_FIREBASE_* values
    ```
-6. **CLI + rules:**
+6. **CLI + rules.** Nothing can read or write until the rules are deployed —
+   a new production-mode database denies everything by default:
    ```sh
    npm install -g firebase-tools
    firebase login
-   cp .firebaserc.example .firebaserc     # put your real project id inside
-   firebase deploy --only firestore,storage
+   firebase deploy --only firestore,storage --project <your-project-id>
    ```
+   Using `--project` saves creating `.firebaserc`. For a **named** database, add
+   `--database <name>` to target it instead of `(default)`.
 7. Restart `npm run dev` — the app now uses real Firebase Auth. Sign-up,
    sign-in, password reset, sign-out, and the live `users/{uid}` profile are
    already wired; the demo-mode role chips disappear automatically.

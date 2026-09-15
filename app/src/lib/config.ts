@@ -14,6 +14,19 @@ export const firebaseConfig = {
  *  demo mode: local store only, no network, role-jump chips enabled. */
 export const firebaseEnabled = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 
+/**
+ * Firestore database id. Leave unset for the standard `(default)` database.
+ *
+ * Firebase also allows *named* databases, and a database named "default" is a
+ * different thing from `(default)` — the console displays both identically, so
+ * it's easy to create one while believing you created the other. If the app
+ * reports no database but the console clearly shows one, set this to the name
+ * in the console's database dropdown.
+ */
+export const firebaseDatabaseId = import.meta.env.VITE_FIREBASE_DATABASE_ID as
+  | string
+  | undefined;
+
 export const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as
   | string
   | undefined;
