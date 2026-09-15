@@ -1,0 +1,34 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function underSizeLimit() { return request.resource.size < 10 * 1024 * 1024; }
+    function isImage() { return request.resource.contentType.matches('image/.*'); }
+
+    // Listing and donation photos: readable by signed-in users, written by owner.
+    match /listings/{uid}/{fileName} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == uid && underSizeLimit() && isImage();
+    }
+
+    // Verification documents: private to the uploader and admins.
+    match /verification/{uid}/{fileName} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if signedIn() && request.auth.uid == uid && underSizeLimit();
+    }
+
+    // Proof-of-delivery photos captured by volunteer drivers.
+    match /deliveries/{deliveryId}/{fileName} {
+      allow read: if signedIn();
+      allow write: if signedIn() && underSizeLimit() && isImage();
+    }
+
+    // Public org profile images shown on the Cash Donations tab.
+    match /orgProfiles/{uid}/{fileName} {
+      allow read: if true;
+      allow write: if signedIn() && request.auth.uid == uid && underSizeLimit() && isImage();
+    }
+
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

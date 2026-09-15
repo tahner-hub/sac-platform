@@ -1,0 +1,47 @@
+export const C = {
+  navy: "#0E1B2E",
+  navyDeep: "#0A1524",
+  navyLine: "#1E3046",
+  navyCard: "#13243A",
+  navyCardLine: "#243a55",
+  navyBorderBtn: "#2C3F58",
+  ink: "#0B1C30",
+  mint: "#6CF8BB",
+  green: "#0A7D52",
+  greenDark: "#0A6B47",
+  greenPale: "#E6FBF1",
+  greenWash: "#F6FBF8",
+  blue: "#2A6FDB",
+  blueDark: "#2A5BA0",
+  bluePale: "#EAF1FF",
+  blueWash: "#EEF3FB",
+  amber: "#E08A1E",
+  amberPale: "#FFF3E0",
+  amberWash: "#FFF8EC",
+  amberInk: "#8A6A2E",
+  red: "#BA1A1A",
+  redPale: "#FFEDEA",
+  redLine: "#F1C7C2",
+  purple: "#8A5CF6",
+  purplePale: "#F1EBFF",
+  bg: "#F6F8FB",
+  surface: "#FFFFFF",
+  line: "#E3E8F0",
+  lineSoft: "#EEF1F6",
+  lineFaint: "#F2F4F8",
+  chipLine: "#C6C6CD",
+  searchBg: "#F2F5F9",
+  textMute: "#5B6472",
+  textFaint: "#8A93A6",
+  navText: "#9DB0C7",
+  navMute: "#7C99B5",
+  chatBg: "#F9FAFC",
+  chatTime: "#CDEFDD",
+  flagIdle: "#B4BCC9",
+} as const;
+
+export const stripes = (a: string, b: string, size: number) =>
+  `repeating-linear-gradient(45deg,${a},${a} ${size}px,${b} ${size}px,${b} ${size * 2}px)`;
+
+export const stripeLight = (size = 5) => stripes("#F3F5F9", "#EAEDF3", size);
+export const stripeAvatar = (size = 5) => stripes("#DCE3EE", "#CDD6E4", size);
