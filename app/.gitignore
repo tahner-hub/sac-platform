@@ -15,3 +15,9 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Env files, including misnamed variants (env.local without the leading dot
+# is invisible to Vite but was NOT caught by the pattern above).
+env.local
+env.*.local
+*.env.local
