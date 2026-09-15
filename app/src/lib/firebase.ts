@@ -21,4 +21,17 @@ if (firebaseEnabled) {
   functions = getFunctions(app);
 }
 
+// Dev-only: says which mode the app actually booted in. "Demo mode" here while
+// app/.env.local exists means Vite didn't read it — it loads env once at
+// startup, so the dev server has to be restarted after the file changes.
+if (import.meta.env.DEV) {
+  console.info(
+    firebaseEnabled
+      ? `[S.A.C.] Firebase mode — project ${firebaseConfig.projectId}` +
+          (firebaseDatabaseId ? `, database "${firebaseDatabaseId}"` : ", database (default)")
+      : "[S.A.C.] Demo mode — no VITE_FIREBASE_* vars loaded. Check app/.env.local exists, " +
+          "then restart the dev server (Vite reads env only at startup).",
+  );
+}
+
 export { app, auth, db, functions, firebaseEnabled };
