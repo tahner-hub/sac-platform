@@ -1,0 +1,17 @@
+{
+  "name": "sac-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "S.A.C. — root convenience scripts. The real packages are app/ and functions/.",
+  "scripts": {
+    "dev": "npm --prefix app run dev",
+    "build": "npm --prefix app run build",
+    "preview": "npm --prefix app run preview",
+    "typecheck": "npm --prefix app run build && npm --prefix functions run build",
+    "lint": "npm --prefix app run lint",
+    "setup": "npm --prefix app install && npm --prefix functions install",
+    "deploy:rules": "firebase deploy --only firestore,storage",
+    "deploy:hosting": "npm --prefix app run build && firebase deploy --only hosting",
+    "deploy:functions": "firebase deploy --only functions"
+  }
+}

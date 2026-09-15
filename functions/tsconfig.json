@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    // node16 for both: with no "type" in package.json this still emits
+    // CommonJS (what Cloud Functions loads via main: lib/index.js), while
+    // replacing the node10 resolution TypeScript now rejects outright.
+    "module": "node16",
     "target": "es2022",
     "lib": ["es2022"],
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     "strict": true,
     "noUnusedLocals": true,
