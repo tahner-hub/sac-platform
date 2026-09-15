@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -105,19 +106,34 @@ export async function signUp(
 ): Promise<void> {
   if (!firebaseEnabled || !auth || !db) return;
   const credential = await createUserWithEmailAndPassword(auth, email, password);
-  // Provision the profile immediately — the onSnapshot listener picks it up.
-  await setDoc(doc(db, "users", credential.user.uid), {
-    email,
-    role,
-    displayName: details.displayName,
-    phone: details.phone ?? "",
-    orgName: details.orgName ?? "",
-    categories: details.categories ?? [],
-    verified: false,
-    status: "active",
-    reportCount: 0,
-    createdAt: serverTimestamp(),
-  });
+  try {
+    // Provision the profile immediately — the onSnapshot listener picks it up.
+    await setDoc(doc(db, "users", credential.user.uid), {
+      email,
+      role,
+      displayName: details.displayName,
+      phone: details.phone ?? "",
+      orgName: details.orgName ?? "",
+      categories: details.categories ?? [],
+      verified: false,
+      status: "active",
+      reportCount: 0,
+      createdAt: serverTimestamp(),
+    });
+  } catch (profileError) {
+    // Sign-up has to be all-or-nothing. The Auth account already exists at
+    // this point, so leaving it behind would make every retry fail with
+    // "email already in use" and strand the person with no way forward.
+    // Roll it back so the same address is free to try again.
+    try {
+      await deleteUser(credential.user);
+    } catch {
+      // Rollback itself failed (rare — needs a recent login). The account is
+      // now orphaned; AuthGate catches this and offers a way out.
+      console.error("Sign-up rollback failed; account exists without a profile.");
+    }
+    throw profileError;
+  }
 }
 
 export async function signIn(email: string, password: string): Promise<void> {
@@ -175,6 +191,15 @@ export function authErrorMessage(error: unknown): string {
     case "auth/invalid-api-key":
     case "auth/api-key-not-valid":
       return "The Firebase API key in app/.env.local isn't valid for this project. Recheck the values and restart the dev server.";
+    // Firestore codes — these arrive here because the profile write is part of
+    // signing up, and they usually mean the database side isn't ready.
+    case "not-found":
+    case "failed-precondition":
+      return "No Firestore database found for this project — create one under Build → Firestore Database (see SETUP.md §3).";
+    case "permission-denied":
+      return "Firestore rejected the write. Deploy the security rules with `firebase deploy --only firestore`.";
+    case "unavailable":
+      return "Couldn't reach Firestore — check your connection and try again.";
     default:
       return "Something went wrong. Please try again.";
   }
