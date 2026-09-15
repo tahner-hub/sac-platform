@@ -20,11 +20,12 @@ npm run dev        # → http://localhost:5173 — demo mode, no keys needed
 | **[SETUP.md](SETUP.md)** | Firebase + Stripe setup, deploy, env vars |
 | **[BACKEND.md](BACKEND.md)** | What you need to provide, and the Firestore data structure |
 | **[DECISIONS.md](DECISIONS.md)** | Every architecture/product decision and why |
+| **[ROADMAP.md](ROADMAP.md)** | The phases left to launch, each with its test gate |
 
 **Backend status:** authentication and the live `users/{uid}` profile are wired
-(BACKEND.md → "Step 1, wired") and switch on as soon as `app/.env.local` has
-real Firebase keys. Listings, orders, needs, deliveries, threads and reports
-still run on the local store — that's steps 2–7.
+and running against a real Firebase project (BACKEND.md → "Step 1, wired").
+Listings, orders, needs, deliveries, threads and reports still run on the local
+store — see ROADMAP.md for the order they get migrated in.
 
 ## Repo layout
 
