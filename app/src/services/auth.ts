@@ -166,6 +166,15 @@ export function authErrorMessage(error: unknown): string {
       return "Use a password of at least 6 characters.";
     case "auth/network-request-failed":
       return "Network problem — check your connection and try again.";
+    // Setup problems, not user mistakes. These surface while the Firebase
+    // project is half-configured, so the message names the actual fix.
+    case "auth/configuration-not-found":
+      return "Authentication isn't set up on this Firebase project yet — enable it under Build → Authentication (see SETUP.md §3).";
+    case "auth/operation-not-allowed":
+      return "Email/password sign-in is turned off for this Firebase project — enable that provider under Build → Authentication → Sign-in method.";
+    case "auth/invalid-api-key":
+    case "auth/api-key-not-valid":
+      return "The Firebase API key in app/.env.local isn't valid for this project. Recheck the values and restart the dev server.";
     default:
       return "Something went wrong. Please try again.";
   }
