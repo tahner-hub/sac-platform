@@ -12,7 +12,8 @@
     "setup": "npm --prefix app install && npm --prefix functions install",
     "deploy:rules": "firebase deploy --only firestore,storage",
     "deploy:hosting": "npm --prefix app run build && firebase deploy --only hosting",
-    "deploy:functions": "firebase deploy --only functions",
+    "deploy:functions": "firebase deploy --only functions:runRecurringDonations,functions:releaseExpiredPriority,functions:onReportCreated,functions:onNeedContribution,functions:requestDeactivation",
+    "deploy:functions:all": "firebase deploy --only functions",
     "test": "firebase emulators:exec --only firestore --project sac-rules-test \"npm --prefix tests run test\""
   }
 }

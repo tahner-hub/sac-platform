@@ -128,6 +128,23 @@ configured production build hides the switcher by default).
 | `STRIPE_SECRET_KEY` | Firebase Functions secret | Server-side Stripe calls |
 | `STRIPE_WEBHOOK_SECRET` | Firebase Functions secret | Webhook signature verification |
 
+## Deploying functions before Stripe exists
+
+`createCheckoutSession` and `stripeWebhook` declare Stripe secrets, and Firebase
+resolves every secret at deploy time — so those two block the other five until
+Secret Manager is enabled and the secrets are set. Since payments come last,
+deploy the five that don't need Stripe:
+
+```sh
+npm run deploy:functions        # the five non-Stripe functions
+```
+
+Once Stripe is configured (§4), switch to the full set:
+
+```sh
+npm run deploy:functions:all    # all seven, requires both secrets to exist
+```
+
 ## Scheduled functions
 
 Two run automatically once deployed:
