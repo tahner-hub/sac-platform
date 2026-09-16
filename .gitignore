@@ -3,3 +3,8 @@ node_modules/
 *.log
 .firebase/
 .firebaserc
+
+# Scaffolding from a stray `firebase init` — the repo already ships a
+# configured firebase.json, so init only ever adds a duplicate codebase.
+/Surplus Donation Platform/
+.firebase/

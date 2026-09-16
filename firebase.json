@@ -10,7 +10,14 @@
   },
   "storage": { "rules": "storage.rules" },
   "functions": [
-    { "source": "functions", "codebase": "default", "predeploy": ["npm --prefix functions run build"] }
+    {
+      "source": "functions",
+      "codebase": "default",
+      "predeploy": [
+        "npm --prefix functions install",
+        "npm --prefix functions run build"
+      ]
+    }
   ],
   "emulators": {
     "auth": { "port": 9099 },
